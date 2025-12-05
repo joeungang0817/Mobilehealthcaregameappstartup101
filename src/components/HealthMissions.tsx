@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { Target, CheckCircle, Lock, Coins, Trophy, Star, TrendingUp, Activity, BarChart3, MessageSquare, Calendar, Sparkles, Award, Flame, Zap, Moon, Apple, Dumbbell, Heart } from 'lucide-react';
+import { Target, CheckCircle, Lock, Coins, Trophy, Star, TrendingUp, Activity, BarChart3, MessageSquare, Calendar, Sparkles, Award, Flame, Zap, Moon, Apple, Dumbbell, Heart, Camera, X, Loader2, Share2, Brain } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Character } from './Character';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
+
+// --- Types & Interfaces ---
+type VerificationType = 'photo' | 'text' | 'auto';
 
 type Mission = {
   id: string;
@@ -15,6 +18,7 @@ type Mission = {
   requirement: string;
   completed: boolean;
   locked: boolean;
+  verificationType?: VerificationType; // 추가됨
 };
 
 type Habit = {
@@ -22,17 +26,161 @@ type Habit = {
   title: string;
   description: string;
   category: 'sleep' | 'diet' | 'exercise';
-  goal: number; // days needed
+  goal: number; 
   currentStreak: number;
   bestStreak: number;
   icon: string;
   color: string;
   badge: string;
   completed: boolean;
+  verificationType?: VerificationType; // 추가됨
 };
 
 type HealthMissionsProps = {
   onCompleteMission: (category: 'sleep' | 'diet' | 'exercise', reward: number) => void;
+};
+
+// --- Verification Components (인증 연출 컴포넌트) ---
+
+const DietVerification = ({ onComplete }: { onComplete: () => void }) => {
+  const [step, setStep] = useState<'camera' | 'analyzing' | 'result'>('camera');
+
+  const handleCapture = () => {
+    setStep('analyzing');
+    setTimeout(() => setStep('result'), 2000);
+  };
+
+  return (
+    <div className="h-full flex flex-col">
+      {step === 'camera' && (
+        <div className="flex-1 flex flex-col items-center justify-center p-6">
+          <div 
+            onClick={handleCapture}
+            className="w-full aspect-square bg-gray-100 rounded-3xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 hover:border-lime-500 transition-all group relative overflow-hidden"
+          >
+            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform z-10">
+              <Camera className="w-10 h-10 text-gray-400 group-hover:text-lime-500" />
+            </div>
+            <p className="mt-4 text-gray-500 font-medium z-10">식단을 촬영해주세요</p>
+          </div>
+        </div>
+      )}
+      {step === 'analyzing' && (
+        <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
+          <Loader2 className="w-12 h-12 text-lime-500 animate-spin mb-4" />
+          <h3 className="text-xl font-bold text-gray-800 mb-2">AI 식단 분석 중...</h3>
+          <p className="text-gray-500">칼로리와 영양소를 계산하고 있습니다.</p>
+        </div>
+      )}
+      {step === 'result' && (
+        <div className="flex-1 flex flex-col p-6 animate-in fade-in slide-in-from-bottom-4">
+          <div className="relative aspect-video bg-gray-200 rounded-2xl mb-4 flex items-center justify-center text-gray-400">
+            [음식 사진]
+            <div className="absolute top-3 left-3 bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-orange-600 shadow-sm">샐러드</div>
+            <div className="absolute bottom-3 right-3 bg-black/70 text-black px-3 py-1 rounded-full text-xs font-bold shadow-sm">320 kcal</div>
+          </div>
+          <div className="bg-gray-50 rounded-2xl p-4 mb-6 space-y-2">
+            <div className="flex justify-between text-sm"><span className="text-gray-500">탄수화물</span><span className="font-bold text-gray-800">24g</span></div>
+            <div className="flex justify-between text-sm"><span className="text-gray-500">단백질</span><span className="font-bold text-blue-600">28g</span></div>
+            <div className="flex justify-between text-sm"><span className="text-gray-500">지방</span><span className="font-bold text-gray-800">12g</span></div>
+          </div>
+          <button onClick={onComplete} className="w-full py-4 bg-lime-500 text-black font-bold rounded-xl shadow-lg hover:bg-lime-600 transition-all flex items-center justify-center gap-2">
+            <CheckCircle className="w-5 h-5" /> 인증 완료
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ExerciseVerification = ({ onComplete }: { onComplete: () => void }) => {
+  const [step, setStep] = useState<'input' | 'analyzing' | 'result'>('input');
+  const [text, setText] = useState('');
+
+  const handleAnalyze = () => {
+    setStep('analyzing');
+    setTimeout(() => setStep('result'), 2000);
+  };
+
+  return (
+    <div className="h-full flex flex-col p-6">
+      {step === 'input' && (
+        <div className="flex-1 flex flex-col">
+          <h3 className="text-lg font-bold text-gray-800 mb-4">어떤 운동을 하셨나요?</h3>
+          <textarea 
+            className="w-full flex-1 bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="예: 한강에서 30분 동안 러닝했어."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <button onClick={handleAnalyze} disabled={!text} className={`w-full py-4 rounded-xl font-bold text-black transition-all ${text ? 'bg-blue-500 shadow-lg' : 'bg-gray-300'}`}>
+            기록 분석하기
+          </button>
+        </div>
+      )}
+      {step === 'analyzing' && (
+        <div className="flex-1 flex flex-col items-center justify-center text-center">
+          <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
+          <h3 className="text-xl font-bold text-gray-800 mb-2">운동 기록 분석 중...</h3>
+        </div>
+      )}
+      {step === 'result' && (
+        <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-bottom-4">
+          <div className="bg-blue-500 rounded-3xl p-6 text-black text-center mb-6 shadow-lg">
+            <Dumbbell className="w-12 h-12 mx-auto mb-2 text-blue-200" />
+            <h3 className="text-2xl font-bold mb-1">오운완!</h3>
+            <p className="text-blue-100">약 350kcal 소모 추정</p>
+          </div>
+          <button onClick={onComplete} className="w-full py-4 bg-blue-600 text-black font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+            <CheckCircle className="w-5 h-5" /> 인증 완료
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const SleepVerification = ({ onComplete }: { onComplete: () => void }) => {
+  const [step, setStep] = useState<'start' | 'loading' | 'result'>('start');
+
+  const handleCheck = () => {
+    setStep('loading');
+    setTimeout(() => setStep('result'), 2000);
+  };
+
+  return (
+    <div className="h-full flex flex-col p-6">
+      {step === 'start' && (
+        <div className="flex-1 flex flex-col items-center justify-center text-center">
+          <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 relative">
+            <Moon className="w-16 h-16 text-indigo-500" />
+            <div className="absolute inset-0 border-4 border-indigo-100 rounded-full animate-ping opacity-20" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">수면 시간 측정</h3>
+          <button onClick={handleCheck} className="w-full mt-8 py-4 bg-indigo-500 text-black font-bold rounded-xl shadow-lg hover:bg-indigo-600 transition-all">
+            데이터 불러오기
+          </button>
+        </div>
+      )}
+      {step === 'loading' && (
+        <div className="flex-1 flex flex-col items-center justify-center text-center">
+          <Loader2 className="w-12 h-12 text-indigo-500 animate-spin mb-4" />
+          <h3 className="text-xl font-bold text-gray-800 mb-2">데이터 동기화 중...</h3>
+        </div>
+      )}
+      {step === 'result' && (
+        <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-bottom-4">
+          <div className="bg-slate-800 rounded-3xl p-8 text-black text-center mb-6 shadow-lg">
+            <div className="text-4xl font-bold mb-2">7시간 42분</div>
+            <p className="text-slate-400 text-sm">총 수면 시간</p>
+          </div>
+          <button onClick={onComplete} className="w-full py-4 bg-indigo-500 text-black font-bold rounded-xl shadow-lg hover:bg-indigo-600 transition-all flex items-center justify-center gap-2">
+            <CheckCircle className="w-5 h-5" /> 인증 완료
+          </button>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
@@ -40,8 +188,10 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
   const [reportPeriod, setReportPeriod] = useState<'week' | 'month'>('week');
   const [celebratingHabit, setCelebratingHabit] = useState<string | null>(null);
   
+  // Verification Modal State
+  const [verifyingItem, setVerifyingItem] = useState<Mission | Habit | null>(null);
+
   const [missions, setMissions] = useState<Mission[]>([
-    // Sleep Missions
     {
       id: 'sleep-1',
       title: '8시간 수면',
@@ -52,7 +202,8 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       requirement: '8시간 이상 수면',
       icon: '🌙',
       completed: false,
-      locked: false
+      locked: false,
+      verificationType: 'auto'
     },
     {
       id: 'sleep-2',
@@ -64,10 +215,9 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       requirement: '10분 스트레칭',
       icon: '🧘',
       completed: false,
-      locked: false
+      locked: false,
+      verificationType: 'text'
     },
-
-    // Diet Missions
     {
       id: 'diet-1',
       title: '아침 식사',
@@ -78,7 +228,8 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       requirement: '건강한 아침 식사',
       icon: '🍳',
       completed: false,
-      locked: false
+      locked: false,
+      verificationType: 'photo'
     },
     {
       id: 'diet-2',
@@ -90,7 +241,8 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       requirement: '2L 이상 물 섭취',
       icon: '💧',
       completed: false,
-      locked: false
+      locked: false,
+      verificationType: 'photo'
     },
     {
       id: 'diet-3',
@@ -102,10 +254,9 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       requirement: '5종류 채소 섭취',
       icon: '🥗',
       completed: false,
-      locked: true
+      locked: true,
+      verificationType: 'photo'
     },
-
-    // Exercise Missions
     {
       id: 'exercise-1',
       title: '30분 운동',
@@ -116,7 +267,8 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       requirement: '30분 이상 운동',
       icon: '🏃',
       completed: false,
-      locked: false
+      locked: false,
+      verificationType: 'text'
     },
     {
       id: 'exercise-2',
@@ -128,7 +280,8 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       requirement: '10,000보 걷기',
       icon: '👟',
       completed: false,
-      locked: false
+      locked: false,
+      verificationType: 'auto'
     },
     {
       id: 'exercise-3',
@@ -140,7 +293,8 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       requirement: '30분 근력 운동',
       icon: '💪',
       completed: false,
-      locked: true
+      locked: true,
+      verificationType: 'text'
     }
   ]);
 
@@ -156,7 +310,8 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       icon: '🌅',
       color: 'from-lime-400 to-green-400',
       badge: '🏆',
-      completed: false
+      completed: false,
+      verificationType: 'auto'
     },
     {
       id: 'habit-2',
@@ -169,7 +324,8 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       icon: '😴',
       color: 'from-teal-400 to-cyan-400',
       badge: '🌙',
-      completed: false
+      completed: false,
+      verificationType: 'auto'
     },
     {
       id: 'habit-3',
@@ -182,7 +338,8 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       icon: '💧',
       color: 'from-blue-400 to-cyan-400',
       badge: '💎',
-      completed: false
+      completed: false,
+      verificationType: 'text'
     },
     {
       id: 'habit-4',
@@ -195,7 +352,8 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       icon: '🥗',
       color: 'from-green-400 to-emerald-400',
       badge: '🌱',
-      completed: true
+      completed: true,
+      verificationType: 'photo'
     },
     {
       id: 'habit-5',
@@ -208,7 +366,8 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       icon: '🔥',
       color: 'from-orange-400 to-red-400',
       badge: '⚡',
-      completed: false
+      completed: false,
+      verificationType: 'text'
     },
     {
       id: 'habit-6',
@@ -221,9 +380,29 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       icon: '👟',
       color: 'from-yellow-400 to-orange-400',
       badge: '🥇',
-      completed: false
+      completed: false,
+      verificationType: 'text'
     }
   ]);
+
+  // 완료 버튼 클릭 시 인증 프로세스 시작
+  const handleVerify = (item: Mission | Habit) => {
+    setVerifyingItem(item);
+  };
+
+  // 인증 완료 후 호출되는 함수
+  const handleVerificationComplete = () => {
+    if (!verifyingItem) return;
+
+    if ('requirement' in verifyingItem) {
+      // It's a Mission
+      completeMission(verifyingItem.id);
+    } else {
+      // It's a Habit
+      incrementHabit(verifyingItem.id);
+    }
+    setVerifyingItem(null);
+  };
 
   const completeMission = (missionId: string) => {
     setMissions(prev => prev.map(m => {
@@ -440,7 +619,7 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
                       </button>
                     ) : (
                       <button
-                        onClick={() => completeMission(mission.id)}
+                        onClick={() => handleVerify(mission)}
                         className="px-4 py-2 rounded-lg bg-gradient-to-r from-lime-500 to-green-500 text-white text-sm hover:shadow-lg transition-shadow"
                       >
                         완료하기
@@ -546,7 +725,7 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
                     {/* Buttons */}
                     <div className="flex gap-2">
                       <button
-                        onClick={() => incrementHabit(habit.id)}
+                        onClick={() => handleVerify(habit)}
                         className={`flex-1 py-2 px-4 rounded-lg bg-gradient-to-r ${habit.color} text-white text-sm hover:shadow-lg transition-shadow flex items-center justify-center gap-1`}
                       >
                         <CheckCircle className="w-4 h-4" />
@@ -983,6 +1162,38 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
               >
                 <Sparkles className="w-12 h-12 mx-auto text-yellow-500" />
               </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Verification Modal (New) */}
+      <AnimatePresence>
+        {verifyingItem && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4 backdrop-blur-sm"
+            onClick={() => setVerifyingItem(null)}
+          >
+            <motion.div
+              initial={{ y: "50%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "50%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center p-4 border-b">
+                <h3 className="font-bold text-lg">{verifyingItem.title} 인증</h3>
+                <button onClick={() => setVerifyingItem(null)}><X className="w-6 h-6 text-gray-500" /></button>
+              </div>
+              <div className="h-96">
+                {verifyingItem.verificationType === 'photo' && <DietVerification onComplete={handleVerificationComplete} />}
+                {verifyingItem.verificationType === 'text' && <ExerciseVerification onComplete={handleVerificationComplete} />}
+                {verifyingItem.verificationType === 'auto' && <SleepVerification onComplete={handleVerificationComplete} />}
+              </div>
             </motion.div>
           </motion.div>
         )}

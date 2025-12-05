@@ -253,7 +253,7 @@ export function Shop({ points, currentCustomization, onPurchase }: ShopProps) {
               상점
             </h1>
           </div>
-          <p className="text-sm text-gray-500">캐릭터 꾸미기 & 헬스케어 쇼핑</p>
+          <p className="text-sm text-gray-500">핏프렌드 꾸미기 & 헬스케어 쇼핑</p>
           <div className="absolute -top-2 -right-2">
             <Sparkles className="w-6 h-6 text-lime-400 animate-pulse" />
           </div>
@@ -279,7 +279,7 @@ export function Shop({ points, currentCustomization, onPurchase }: ShopProps) {
           }`}
         >
           <Palette className="w-5 h-5" />
-          <span>캐릭터 꾸미기</span>
+          <span>핏프렌드 꾸미기</span>
         </button>
         <button
           onClick={() => setMainTab('store')}

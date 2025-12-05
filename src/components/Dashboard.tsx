@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Character } from './Character';
-import { UserData } from '../App';
+import { UserData, Habit } from '../App'; // Habit 타입 import 추가
 import { Heart, Utensils, Dumbbell, Coins, Send, ShoppingCart, ExternalLink, MessageCircle, Sparkles, Trophy, Star, Home } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -18,21 +18,16 @@ type Message = {
   };
 };
 
-type Habit = {
-  id: string;
-  title: string;
-  badge: string;
-  goal: number;
-  color: string;
-};
+// Habit 타입 정의 제거 (App.tsx에서 import)
 
 type DashboardProps = {
   userData: UserData;
   completedHabits?: Habit[];
   onFaceRecognitionComplete?: () => void;
+  onNavigate: (page: "dashboard" | "health" | "shop" | "community" | "profile" | "chat") => void; // onNavigate prop 추가
 };
 
-export function Dashboard({ userData, completedHabits = [], onFaceRecognitionComplete }: DashboardProps) {
+export function Dashboard({ userData, completedHabits = [], onFaceRecognitionComplete, onNavigate }: DashboardProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -352,15 +347,16 @@ export function Dashboard({ userData, completedHabits = [], onFaceRecognitionCom
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="wellness-card p-5 mb-6 shadow-lg"
+        className="wellness-card p-5 mb-6 shadow-lg cursor-pointer hover:bg-gray-50 transition-colors" // cursor-pointer, hover 효과 추가
+        onClick={() => onNavigate('chat')} // 클릭 시 'chat' 페이지로 이동
       >
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-4 pointer-events-none"> {/* 내부 요소 클릭 방지 */}
           <MessageCircle className="w-5 h-5 text-lime-600" />
-          <h3 className="text-lg text-gray-800">캐릭터와 대화하기</h3>
+          <h3 className="text-lg text-gray-800">핏프렌드와 대화하기</h3>
         </div>
 
         {/* Messages */}
-        <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
+        <div className="space-y-3 mb-4 max-h-64 overflow-y-auto pointer-events-none"> {/* 내부 요소 클릭 방지 */}
           {messages.map((message) => (
             <div
               key={message.id}
@@ -404,22 +400,18 @@ export function Dashboard({ userData, completedHabits = [], onFaceRecognitionCom
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input */}
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="건강 관련 질문을 해보세요..."
-            className="flex-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-lime-500 focus:outline-none text-sm"
-          />
-          <button
-            onClick={handleSend}
-            className="p-3 bg-gradient-to-r from-lime-500 to-green-500 text-white rounded-xl hover:shadow-lg transition-all"
+        {/* Input - disabled look */}
+        <div className="flex gap-2 pointer-events-none"> {/* 내부 요소 클릭 방지 */}
+          <div
+            className="flex-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-400"
+          >
+            건강 관련 질문을 해보세요...
+          </div>
+          <div
+            className="p-3 bg-gradient-to-r from-lime-500 to-green-500 text-white rounded-xl shadow-sm"
           >
             <Send className="w-5 h-5" />
-          </button>
+          </div>
         </div>
       </motion.div>
 

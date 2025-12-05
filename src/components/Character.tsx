@@ -71,7 +71,7 @@ export function Character({
           whileTap={{ scale: 0.95 }}
         >
           <Camera className="w-4 h-4" />
-          <span className="text-sm">얼굴 인식으로 캐릭터 만들기</span>
+          <span className="text-sm">얼굴 인식으로 핏프렌드 만들기</span>
         </motion.button>
       )}
 
