@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { motion } from 'motion/react';
-import logoGreen from 'figma:asset/6c134fa0a0d080b685790b9926bedcd569863d36.png';
+import logoBlack from '@/assets/logo_black.png';
 
 type SplashScreenProps = {
   onComplete: () => void;
@@ -85,7 +85,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            src={logoGreen}
+            src={logoBlack}
             alt="FitFriends Logo"
             className="w-64 h-auto"
           />

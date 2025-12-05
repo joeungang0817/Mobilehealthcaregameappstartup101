@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles } from 'lucide-react';
-import logoGreen from 'figma:asset/6c134fa0a0d080b685790b9926bedcd569863d36.png';
+import logoGreen from '@/assets/logo_color.png';
 
 type LoginScreenProps = {
   onLogin: (email: string, password: string) => void;
@@ -59,15 +59,14 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
         <div className="bg-white rounded-3xl shadow-2xl p-8 backdrop-blur-lg bg-white/95">
           {/* Logo */}
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            animate={{ scale: 0.85, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex flex-col items-center mb-8"
+            className="flex flex-col items-center"
           >
             <img
               src={logoGreen}
               alt="FitFriends Logo"
-              className="w-48 h-auto mb-2"
+              className="w-48 h-auto"
             />
           </motion.div>
 
