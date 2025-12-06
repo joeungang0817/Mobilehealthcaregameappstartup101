@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Target, CheckCircle, Lock, Coins, Trophy, Star, TrendingUp, Activity, BarChart3, MessageSquare, Calendar, Sparkles, Award, Flame, Zap, Moon, Apple, Dumbbell, Heart, Camera, X, Loader2, Share2, Brain } from 'lucide-react';
+import { Target, CheckCircle, Lock, Coins, Trophy, Star, TrendingUp, Activity, BarChart3, MessageSquare, Calendar, Sparkles, Award, Flame, Zap, Moon, Apple, Dumbbell, Camera, X, Loader2, Share2, Brain, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Character } from './Character';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
@@ -18,7 +18,7 @@ type Mission = {
   requirement: string;
   completed: boolean;
   locked: boolean;
-  verificationType?: VerificationType; // 추가됨
+  verificationType?: VerificationType;
 };
 
 type Habit = {
@@ -33,7 +33,7 @@ type Habit = {
   color: string;
   badge: string;
   completed: boolean;
-  verificationType?: VerificationType; // 추가됨
+  verificationType?: VerificationType;
 };
 
 type HealthMissionsProps = {
@@ -51,41 +51,85 @@ const DietVerification = ({ onComplete }: { onComplete: () => void }) => {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col relative p-6">
       {step === 'camera' && (
-        <div className="flex-1 flex flex-col items-center justify-center p-6">
-          <div 
-            onClick={handleCapture}
-            className="w-full aspect-square bg-gray-100 rounded-3xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 hover:border-lime-500 transition-all group relative overflow-hidden"
-          >
-            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform z-10">
-              <Camera className="w-10 h-10 text-gray-400 group-hover:text-lime-500" />
+        <div className="flex-1 flex flex-col justify-between">
+          <div className="flex-1 flex flex-col items-center justify-center">
+            <div 
+              onClick={handleCapture}
+              className="w-full aspect-[4/3] bg-gray-100 rounded-3xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 hover:border-lime-500 transition-all group relative overflow-hidden mb-4"
+            >
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform z-10">
+                <Camera className="w-8 h-8 text-gray-400 group-hover:text-lime-500" />
+              </div>
+              <p className="mt-3 text-gray-500 font-medium z-10 text-sm">촬영하기</p>
             </div>
-            <p className="mt-4 text-gray-500 font-medium z-10">식단을 촬영해주세요</p>
+            <p className="text-gray-400 text-xs text-center">음식이나 음료를 촬영해주세요.</p>
           </div>
+          {/* 하단 버튼 공간 확보용 (투명 버튼이나 여백) */}
+          <div className="h-12" />
         </div>
       )}
       {step === 'analyzing' && (
-        <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
-          <Loader2 className="w-12 h-12 text-lime-500 animate-spin mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">AI 식단 분석 중...</h3>
-          <p className="text-gray-500">칼로리와 영양소를 계산하고 있습니다.</p>
+        <div className="flex-1 flex flex-col items-center justify-center text-center min-h-[300px]">
+          <Loader2 className="w-10 h-10 text-lime-500 animate-spin mb-4" />
+          <h3 className="text-lg font-bold text-gray-800 mb-1">AI 분석 중...</h3>
+          <p className="text-sm text-gray-500">영양소를 계산하고 있습니다.</p>
         </div>
       )}
       {step === 'result' && (
-        <div className="flex-1 flex flex-col p-6 animate-in fade-in slide-in-from-bottom-4">
-          <div className="relative aspect-video bg-gray-200 rounded-2xl mb-4 flex items-center justify-center text-gray-400">
-            [음식 사진]
-            <div className="absolute top-3 left-3 bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-orange-600 shadow-sm">샐러드</div>
-            <div className="absolute bottom-3 right-3 bg-black/70 text-black px-3 py-1 rounded-full text-xs font-bold shadow-sm">320 kcal</div>
+        <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-bottom-4 overflow-y-auto">
+          {/* 이미지 영역 */}
+          <div className="relative w-full h-full bg-gray-200 rounded-xl mb-6 flex items-center justify-center overflow-hidden shadow-inner">
+            <img src="src/assets/salad.jpg" width="300"/>
           </div>
-          <div className="bg-gray-50 rounded-2xl p-4 mb-6 space-y-2">
-            <div className="flex justify-between text-sm"><span className="text-gray-500">탄수화물</span><span className="font-bold text-gray-800">24g</span></div>
-            <div className="flex justify-between text-sm"><span className="text-gray-500">단백질</span><span className="font-bold text-blue-600">28g</span></div>
-            <div className="flex justify-between text-sm"><span className="text-gray-500">지방</span><span className="font-bold text-gray-800">12g</span></div>
+          <div className="flex">
+          <div className="left-2 backdrop-blur-md px-2 py-1 rounded-full text-[10px] font-bold text-orange-600 shadow-sm border border-white/50">
+                🥗 닭가슴살 샐러드
           </div>
-          <button onClick={onComplete} className="w-full py-4 bg-lime-500 text-black font-bold rounded-xl shadow-lg hover:bg-lime-600 transition-all flex items-center justify-center gap-2">
-            <CheckCircle className="w-5 h-5" /> 인증 완료
+          &ensp;
+          &ensp;
+          &ensp;
+          &ensp;
+          &ensp;
+          &ensp;
+          <div className=" right-2 bg-black/70 backdrop-blur-md text-black px-2 py-1 rounded-full text-[10px] font-bold shadow-sm">
+                320 kcal
+          </div>
+          </div>
+          {/* 영양 정보 */}
+          <div className="bg-gray-50 rounded-xl p-4 mt-2 mb-6 border border-gray-100 shadow-sm shrink-0">
+            <h4 className="text-xs font-bold text-gray-700 mb-2 flex items-center gap-1.5">
+              <Activity className="w-3 h-3 text-lime-500" /> 영양소 분석
+            </h4>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-gray-500 w-16">탄수화물</span>
+                <div className="flex-1 h-1.5 bg-gray-200 rounded-full mx-2 overflow-hidden">
+                  <div className="h-full bg-orange-400 w-[40%]" />
+                </div>
+                <span className="font-bold text-gray-800 w-8 text-right">24g</span>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-gray-500 w-16">단백질</span>
+                <div className="flex-1 h-1.5 bg-gray-200 rounded-full mx-2 overflow-hidden">
+                  <div className="h-full bg-blue-500 w-[60%]" />
+                </div>
+                <span className="font-bold text-blue-600 w-8 text-right">28g</span>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-gray-500 w-16">지방</span>
+                <div className="flex-1 h-1.5 bg-gray-200 rounded-full mx-2 overflow-hidden">
+                  <div className="h-full bg-yellow-400 w-[30%]" />
+                </div>
+                <span className="font-bold text-gray-800 w-8 text-right">12g</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 버튼: mt-auto를 통해 하단에 고정하고 상단 요소와 간격 확보 */}
+          <button onClick={onComplete} className="w-full py-3 bg-lime-500 text-white font-bold rounded-xl shadow-md hover:bg-lime-600 transition-all flex items-center justify-center gap-2 mt-auto text-sm mb-2">
+            <CheckCircle className="w-4 h-4" /> 인증 완료
           </button>
         </div>
       )}
@@ -105,34 +149,36 @@ const ExerciseVerification = ({ onComplete }: { onComplete: () => void }) => {
   return (
     <div className="h-full flex flex-col p-6">
       {step === 'input' && (
-        <div className="flex-1 flex flex-col">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">어떤 운동을 하셨나요?</h3>
+        <div className="flex-1 flex flex-col h-full">
+          <h3 className="text-base font-bold text-gray-800 mb-3">어떤 운동을 하셨나요?</h3>
           <textarea 
-            className="w-full flex-1 bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full flex-1 bg-gray-50 border border-gray-200 rounded-xl p-3 mb-6 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm min-h-[120px]"
             placeholder="예: 한강에서 30분 동안 러닝했어."
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          <button onClick={handleAnalyze} disabled={!text} className={`w-full py-4 rounded-xl font-bold text-black transition-all ${text ? 'bg-blue-500 shadow-lg' : 'bg-gray-300'}`}>
+          {/* 버튼: 상단 textarea와 mb-6로 간격 확보, mt-auto로 하단 배치 */}
+          <button onClick={handleAnalyze} disabled={!text} className={`w-full py-3 rounded-xl font-bold text-black transition-all text-sm mt-auto mb-2 ${text ? 'bg-blue-500 shadow-md' : 'bg-gray-300'}`}>
             기록 분석하기
           </button>
         </div>
       )}
       {step === 'analyzing' && (
-        <div className="flex-1 flex flex-col items-center justify-center text-center">
-          <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">운동 기록 분석 중...</h3>
+        <div className="flex-1 flex flex-col items-center justify-center text-center min-h-[300px]">
+          <Loader2 className="w-10 h-10 text-blue-500 animate-spin mb-4" />
+          <h3 className="text-lg font-bold text-gray-800 mb-1">분석 중...</h3>
         </div>
       )}
       {step === 'result' && (
         <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-bottom-4">
-          <div className="bg-blue-500 rounded-3xl p-6 text-black text-center mb-6 shadow-lg">
-            <Dumbbell className="w-12 h-12 mx-auto mb-2 text-blue-200" />
-            <h3 className="text-2xl font-bold mb-1">오운완!</h3>
-            <p className="text-blue-100">약 350kcal 소모 추정</p>
+          <div className="bg-blue-500 rounded-2xl p-5 text-black text-center mb-6 shadow-md mt-4">
+            <Dumbbell className="w-10 h-10 mx-auto mb-2 text-blue-100" />
+            <h3 className="text-xl font-bold mb-1">오운완!</h3>
+            <p className="text-blue-100 text-sm">약 350kcal 소모 추정</p>
           </div>
-          <button onClick={onComplete} className="w-full py-4 bg-blue-600 text-black font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
-            <CheckCircle className="w-5 h-5" /> 인증 완료
+          {/* 버튼: 상단 카드와 mb-6로 간격 확보, mt-auto로 하단 배치 */}
+          <button onClick={onComplete} className="w-full py-3 bg-blue-600 text-black font-bold rounded-xl shadow-md hover:bg-blue-700 transition-all flex items-center justify-center gap-2 mt-auto mb-2 text-sm">
+            <CheckCircle className="w-4 h-4" /> 인증 완료
           </button>
         </div>
       )}
@@ -151,31 +197,35 @@ const SleepVerification = ({ onComplete }: { onComplete: () => void }) => {
   return (
     <div className="h-full flex flex-col p-6">
       {step === 'start' && (
-        <div className="flex-1 flex flex-col items-center justify-center text-center">
-          <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 relative">
-            <Moon className="w-16 h-16 text-indigo-500" />
+        <div className="flex-1 flex flex-col items-center justify-center text-center h-full">
+          <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6 relative">
+            <Moon className="w-10 h-10 text-indigo-500" />
             <div className="absolute inset-0 border-4 border-indigo-100 rounded-full animate-ping opacity-20" />
           </div>
-          <h3 className="text-xl font-bold text-gray-800 mb-2">수면 시간 측정</h3>
-          <button onClick={handleCheck} className="w-full mt-8 py-4 bg-indigo-500 text-black font-bold rounded-xl shadow-lg hover:bg-indigo-600 transition-all">
+          <h3 className="text-lg font-bold text-gray-800 mb-1">수면 시간 측정</h3>
+          <p className="text-gray-500 text-xs mb-8">핸드폰 미사용 시간을 확인합니다.</p>
+          
+          {/* 버튼: 상단 텍스트와 mb-8로 간격 확보, mt-auto로 하단 배치 */}
+          <button onClick={handleCheck} className="w-full py-3 bg-indigo-500 text-black font-bold rounded-xl shadow-md hover:bg-indigo-600 transition-all text-sm mt-auto mb-2">
             데이터 불러오기
           </button>
         </div>
       )}
       {step === 'loading' && (
-        <div className="flex-1 flex flex-col items-center justify-center text-center">
-          <Loader2 className="w-12 h-12 text-indigo-500 animate-spin mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">데이터 동기화 중...</h3>
+        <div className="flex-1 flex flex-col items-center justify-center text-center min-h-[300px]">
+          <Loader2 className="w-10 h-10 text-indigo-500 animate-spin mb-4" />
+          <h3 className="text-lg font-bold text-gray-800 mb-1">동기화 중...</h3>
         </div>
       )}
       {step === 'result' && (
         <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-bottom-4">
-          <div className="bg-slate-800 rounded-3xl p-8 text-black text-center mb-6 shadow-lg">
-            <div className="text-4xl font-bold mb-2">7시간 42분</div>
-            <p className="text-slate-400 text-sm">총 수면 시간</p>
+          <div className="bg-slate-800 rounded-2xl p-6 text-black text-center mb-6 shadow-md mt-4">
+            <div className="text-3xl font-bold mb-1">7시간 42분</div>
+            <p className="text-slate-400 text-xs">총 수면 시간</p>
           </div>
-          <button onClick={onComplete} className="w-full py-4 bg-indigo-500 text-black font-bold rounded-xl shadow-lg hover:bg-indigo-600 transition-all flex items-center justify-center gap-2">
-            <CheckCircle className="w-5 h-5" /> 인증 완료
+          {/* 버튼: 상단 카드와 mb-6로 간격 확보, mt-auto로 하단 배치 */}
+          <button onClick={onComplete} className="w-full py-3 bg-indigo-500 text-black font-bold rounded-xl shadow-md hover:bg-indigo-600 transition-all flex items-center justify-center gap-2 mt-auto mb-2 text-sm">
+            <CheckCircle className="w-4 h-4" /> 인증 완료
           </button>
         </div>
       )}
@@ -192,213 +242,35 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
   const [verifyingItem, setVerifyingItem] = useState<Mission | Habit | null>(null);
 
   const [missions, setMissions] = useState<Mission[]>([
-    {
-      id: 'sleep-1',
-      title: '8시간 수면',
-      description: '충분한 수면으로 하루를 시작하세요',
-      category: 'sleep',
-      difficulty: '쉬움',
-      reward: 50,
-      requirement: '8시간 이상 수면',
-      icon: '🌙',
-      completed: false,
-      locked: false,
-      verificationType: 'auto'
-    },
-    {
-      id: 'sleep-2',
-      title: '자기 전 스트레칭',
-      description: '잠들기 전 10분 스트레칭으로 숙면을 준비하세요',
-      category: 'sleep',
-      difficulty: '쉬움',
-      reward: 35,
-      requirement: '10분 스트레칭',
-      icon: '🧘',
-      completed: false,
-      locked: false,
-      verificationType: 'text'
-    },
-    {
-      id: 'diet-1',
-      title: '아침 식사',
-      description: '건강한 아침 식사로 에너지를 충전하세요',
-      category: 'diet',
-      difficulty: '쉬움',
-      reward: 30,
-      requirement: '건강한 아침 식사',
-      icon: '🍳',
-      completed: false,
-      locked: false,
-      verificationType: 'photo'
-    },
-    {
-      id: 'diet-2',
-      title: '물 8잔',
-      description: '하루에 물 8잔을 마시세요',
-      category: 'diet',
-      difficulty: '보통',
-      reward: 40,
-      requirement: '2L 이상 물 섭취',
-      icon: '💧',
-      completed: false,
-      locked: false,
-      verificationType: 'photo'
-    },
-    {
-      id: 'diet-3',
-      title: '채소 5종류',
-      description: '다양한 채소를 섭취하여 영양 균형을 맞추세요',
-      category: 'diet',
-      difficulty: '어려움',
-      reward: 90,
-      requirement: '5종류 채소 섭취',
-      icon: '🥗',
-      completed: false,
-      locked: true,
-      verificationType: 'photo'
-    },
-    {
-      id: 'exercise-1',
-      title: '30분 운동',
-      description: '30분 이상 운동하여 활력을 얻으세요',
-      category: 'exercise',
-      difficulty: '보통',
-      reward: 75,
-      requirement: '30분 이상 운동',
-      icon: '🏃',
-      completed: false,
-      locked: false,
-      verificationType: 'text'
-    },
-    {
-      id: 'exercise-2',
-      title: '10,000 걸음',
-      description: '하루 만보를 걸어보세요',
-      category: 'exercise',
-      difficulty: '보통',
-      reward: 60,
-      requirement: '10,000보 걷기',
-      icon: '👟',
-      completed: false,
-      locked: false,
-      verificationType: 'auto'
-    },
-    {
-      id: 'exercise-3',
-      title: '근력 운동',
-      description: '근력 운동으로 몸을 강화하세요',
-      category: 'exercise',
-      difficulty: '어려움',
-      reward: 100,
-      requirement: '30분 근력 운동',
-      icon: '💪',
-      completed: false,
-      locked: true,
-      verificationType: 'text'
-    }
+    { id: 'sleep-1', title: '8시간 수면', description: '충분한 수면으로 하루를 시작하세요', category: 'sleep', difficulty: '쉬움', reward: 50, requirement: '8시간 이상 수면', icon: '🌙', completed: false, locked: false, verificationType: 'auto' },
+    { id: 'sleep-2', title: '스트레칭', description: '잠들기 전 10분 스트레칭', category: 'sleep', difficulty: '쉬움', reward: 35, requirement: '10분 스트레칭', icon: '🧘', completed: false, locked: false, verificationType: 'text' },
+    { id: 'diet-1', title: '아침 식사', description: '건강한 아침 식사 챙기기', category: 'diet', difficulty: '쉬움', reward: 30, requirement: '건강한 아침 식사', icon: '🍳', completed: false, locked: false, verificationType: 'photo' },
+    { id: 'diet-2', title: '물 8잔', description: '하루에 물 8잔을 마시세요', category: 'diet', difficulty: '보통', reward: 40, requirement: '2L 이상 물 섭취', icon: '💧', completed: false, locked: false, verificationType: 'photo' },
+    { id: 'diet-3', title: '채소 5종류', description: '다양한 채소를 섭취하세요', category: 'diet', difficulty: '어려움', reward: 90, requirement: '5종류 채소 섭취', icon: '🥗', completed: false, locked: true, verificationType: 'photo' },
+    { id: 'exercise-1', title: '30분 운동', description: '30분 이상 운동', category: 'exercise', difficulty: '보통', reward: 75, requirement: '30분 이상 운동', icon: '🏃', completed: false, locked: false, verificationType: 'text' },
+    { id: 'exercise-2', title: '10,000 걸음', description: '하루 만보를 걸어보세요', category: 'exercise', difficulty: '보통', reward: 60, requirement: '10,000보 걷기', icon: '👟', completed: false, locked: false, verificationType: 'auto' },
+    { id: 'exercise-3', title: '근력 운동', description: '근력 운동으로 몸을 강화하세요', category: 'exercise', difficulty: '어려움', reward: 100, requirement: '30분 근력 운동', icon: '💪', completed: false, locked: true, verificationType: 'text' }
   ]);
 
   const [habits, setHabits] = useState<Habit[]>([
-    {
-      id: 'habit-1',
-      title: '아침형 인간',
-      description: '30일 연속 7시 전 기상',
-      category: 'sleep',
-      goal: 30,
-      currentStreak: 12,
-      bestStreak: 15,
-      icon: '🌅',
-      color: 'from-lime-400 to-green-400',
-      badge: '🏆',
-      completed: false,
-      verificationType: 'auto'
-    },
-    {
-      id: 'habit-2',
-      title: '수면 마스터',
-      description: '7일 연속 8시간 수면',
-      category: 'sleep',
-      goal: 7,
-      currentStreak: 4,
-      bestStreak: 6,
-      icon: '😴',
-      color: 'from-teal-400 to-cyan-400',
-      badge: '🌙',
-      completed: false,
-      verificationType: 'auto'
-    },
-    {
-      id: 'habit-3',
-      title: '물 마시기 챌린지',
-      description: '30일 연속 2L 물 섭취',
-      category: 'diet',
-      goal: 30,
-      currentStreak: 18,
-      bestStreak: 20,
-      icon: '💧',
-      color: 'from-blue-400 to-cyan-400',
-      badge: '💎',
-      completed: false,
-      verificationType: 'text'
-    },
-    {
-      id: 'habit-4',
-      title: '건강한 식단',
-      description: '14일 연속 채소 섭취',
-      category: 'diet',
-      goal: 14,
-      currentStreak: 14,
-      bestStreak: 14,
-      icon: '🥗',
-      color: 'from-green-400 to-emerald-400',
-      badge: '🌱',
-      completed: true,
-      verificationType: 'photo'
-    },
-    {
-      id: 'habit-5',
-      title: '운동 전사',
-      description: '21일 연속 30분 운동',
-      category: 'exercise',
-      goal: 21,
-      currentStreak: 8,
-      bestStreak: 10,
-      icon: '🔥',
-      color: 'from-orange-400 to-red-400',
-      badge: '⚡',
-      completed: false,
-      verificationType: 'text'
-    },
-    {
-      id: 'habit-6',
-      title: '만보 걷기',
-      description: '14일 연속 10,000보',
-      category: 'exercise',
-      goal: 14,
-      currentStreak: 5,
-      bestStreak: 7,
-      icon: '👟',
-      color: 'from-yellow-400 to-orange-400',
-      badge: '🥇',
-      completed: false,
-      verificationType: 'text'
-    }
+    { id: 'habit-1', title: '아침형 인간', description: '30일 연속 7시 전 기상', category: 'sleep', goal: 30, currentStreak: 12, bestStreak: 15, icon: '🌅', color: 'from-lime-400 to-green-400', badge: '🏆', completed: false, verificationType: 'auto' },
+    { id: 'habit-2', title: '수면 마스터', description: '7일 연속 8시간 수면', category: 'sleep', goal: 7, currentStreak: 4, bestStreak: 6, icon: '😴', color: 'from-teal-400 to-cyan-400', badge: '🌙', completed: false, verificationType: 'auto' },
+    { id: 'habit-3', title: '물 마시기 챌린지', description: '30일 연속 2L 물 섭취', category: 'diet', goal: 30, currentStreak: 18, bestStreak: 20, icon: '💧', color: 'from-blue-400 to-cyan-400', badge: '💎', completed: false, verificationType: 'photo' },
+    { id: 'habit-4', title: '건강한 식단', description: '14일 연속 채소 섭취', category: 'diet', goal: 14, currentStreak: 14, bestStreak: 14, icon: '🥗', color: 'from-green-400 to-emerald-400', badge: '🌱', completed: true, verificationType: 'photo' },
+    { id: 'habit-5', title: '운동 전사', description: '21일 연속 30분 운동', category: 'exercise', goal: 21, currentStreak: 8, bestStreak: 10, icon: '🔥', color: 'from-orange-400 to-red-400', badge: '⚡', completed: false, verificationType: 'text' },
+    { id: 'habit-6', title: '만보 걷기', description: '14일 연속 10,000보', category: 'exercise', goal: 14, currentStreak: 5, bestStreak: 7, icon: '👟', color: 'from-yellow-400 to-orange-400', badge: '🥇', completed: false, verificationType: 'auto' }
   ]);
 
-  // 완료 버튼 클릭 시 인증 프로세스 시작
   const handleVerify = (item: Mission | Habit) => {
     setVerifyingItem(item);
   };
 
-  // 인증 완료 후 호출되는 함수
   const handleVerificationComplete = () => {
     if (!verifyingItem) return;
 
     if ('requirement' in verifyingItem) {
-      // It's a Mission
       completeMission(verifyingItem.id);
     } else {
-      // It's a Habit
       incrementHabit(verifyingItem.id);
     }
     setVerifyingItem(null);
@@ -423,7 +295,7 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
         if (isCompleted) {
           setCelebratingHabit(habitId);
           setTimeout(() => setCelebratingHabit(null), 3000);
-          onCompleteMission(h.category, h.goal * 10); // Bonus gold
+          onCompleteMission(h.category, h.goal * 10);
         }
         
         return {
@@ -504,15 +376,13 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
             </h1>
           </div>
           <p className="text-sm text-gray-500">목표를 달성하고 보상을 받으세요</p>
-          <div className="absolute -top-2 -right-2">
-            <Sparkles className="w-6 h-6 text-lime-400 animate-pulse" />
-          </div>
         </motion.div>
       </div>
 
       {/* Tabs */}
       <div className="px-6 mb-6">
         <div className="flex gap-2 overflow-x-auto pb-2">
+          {/* ... Tabs Buttons ... */}
           <button
             onClick={() => setSelectedTab('missions')}
             className={`px-4 py-2 rounded-full whitespace-nowrap transition-all flex items-center gap-2 ${
@@ -1168,28 +1038,36 @@ export function HealthMissions({ onCompleteMission }: HealthMissionsProps) {
       </AnimatePresence>
 
       {/* Verification Modal (New) */}
-      <AnimatePresence>
+     <AnimatePresence>
         {verifyingItem && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4 backdrop-blur-sm"
+            // 1. items-end(하단 정렬)를 items-center(중앙 정렬)로 변경하여 항상 화면 가운데 팝업되게 함
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
             onClick={() => setVerifyingItem(null)}
           >
             <motion.div
-              initial={{ y: "50%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "50%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
+              
+              // 👇 [수정됨] 너비 관련 클래스 변경
+              // w-full -> w-[350px] 또는 w-[400px] (원하는 고정 너비)
+              // max-w-sm 대신 max-w-[90vw] (화면보다 클 경우 화면 너비의 90%까지만)
+              className="bg-white min-w-[600px] min-h-[400px] rounded-3xl shadow-2xl overflow-hidden flex flex-col relative"
+              
               onClick={e => e.stopPropagation()}
             >
               <div className="flex justify-between items-center p-4 border-b">
-                <h3 className="font-bold text-lg">{verifyingItem.title} 인증</h3>
-                <button onClick={() => setVerifyingItem(null)}><X className="w-6 h-6 text-gray-500" /></button>
+                <h3 className="font-bold text-lg text-gray-800">{verifyingItem.title} 인증  &ensp; &ensp; &ensp; &ensp; &ensp; &ensp; &ensp; &ensp; &ensp; &ensp; &ensp; &ensp;</h3>
+                <button onClick={() => setVerifyingItem(null)} className="p-2 hover:bg-gray-100 rounded-full">
+                  <X className="w-6 h-6 text-gray-500" />
+                </button>
               </div>
-              <div className="h-96">
+              <div className="flex-1 overflow-hidden h-full">
                 {verifyingItem.verificationType === 'photo' && <DietVerification onComplete={handleVerificationComplete} />}
                 {verifyingItem.verificationType === 'text' && <ExerciseVerification onComplete={handleVerificationComplete} />}
                 {verifyingItem.verificationType === 'auto' && <SleepVerification onComplete={handleVerificationComplete} />}

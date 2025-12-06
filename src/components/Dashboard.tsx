@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Character } from './Character';
 import { UserData, Habit } from '../App'; // Habit 타입 import 추가
-import { Heart, Utensils, Dumbbell, Coins, Send, ShoppingCart, ExternalLink, MessageCircle, Sparkles, Trophy, Star, Home } from 'lucide-react';
+import { Heart, Utensils, Dumbbell, Coins, Send, ShoppingCart, ExternalLink, MessageCircle, Trophy, Star, Home } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 type Message = {
@@ -238,9 +238,6 @@ export function Dashboard({ userData, completedHabits = [], onFaceRecognitionCom
           </h1>
         </div>
         <p className="text-sm text-gray-500">당신의 건강한 하루</p>
-        <div className="absolute -top-2 -right-2">
-          <Sparkles className="w-6 h-6 text-lime-400 animate-pulse" />
-        </div>
       </motion.div>
 
       {/* Gold Display */}

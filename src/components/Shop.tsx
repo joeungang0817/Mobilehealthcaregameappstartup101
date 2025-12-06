@@ -254,9 +254,6 @@ export function Shop({ points, currentCustomization, onPurchase }: ShopProps) {
             </h1>
           </div>
           <p className="text-sm text-gray-500">핏프렌드 꾸미기 & 헬스케어 쇼핑</p>
-          <div className="absolute -top-2 -right-2">
-            <Sparkles className="w-6 h-6 text-lime-400 animate-pulse" />
-          </div>
         </motion.div>
       </div>
 
